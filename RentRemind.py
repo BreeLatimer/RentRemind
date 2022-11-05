@@ -3,61 +3,61 @@ Description: This script will @everyone reminders to pay rent and other bills
 """
 
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
 import os
-import asyncio
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from calendar import monthrange
 
-token = "MTAzODM2MjE4MDQ5MzUyMDg5Nw.Gv0OIP.TikxCTzTrtSjZmrggtVDKByQ0qSz70ckMH7JxU"
-
+token = os.environ.get('RENTREMIND_TOKEN')
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or(">"),
-    description='A simple music bot',
+client = commands.Bot(
+    command_prefix="!",
+    description='A bot to remind people to pay rent and other bills',
     intents=intents,
 )
 
-# Command to check every 12 hours if it is 12pm on the 23rd of the month
-# If it is, send a message to the channel
-@bot.command(name='initialize', help='To remind everyone to pay rent', aliases=['i']):
-async def initialize(ctx):
-    # Create a loop that is executed every 12 hours
-    while True:
-        # Get the current date
-        today = date.today()
-        # Get the current time
-        now = datetime.now()
-        # Get the current hour
-        current_hour = now.strftime("%H")
-        # Get the current month
-        current_month = today.strftime("%m")
-        # Get the current year
-        current_year = today.strftime("%Y")
+@client.event
+async def on_ready():
+    await client.wait_until_ready()
+    check_remind.start()
+    print('Bot is ready.')
 
-        # If it is the 11th of the month and past 12pm, send a message to the channel
-        if today.day == 11 and current_hour >= 12:
-            await ctx.send('@everyone The power bill is due in one week!')
+# Check every hour for reminders
+@tasks.loop(hours=1)
+async def check_remind():
+    # get today's date
+    day = date.today().day
 
-        # If it is the 18th of the month and past 12pm, send a message to the channel
-        if today.day == 18 and current_hour >= 12:
-            await ctx.send('@everyone The Internet bill is due in one week, and the power bill is due today!!')
+    # get today's month
+    month = date.today().month
 
-        # If it is the 23rd of the month and past 12pm, send a message to the channel
-        if today.day == 23 and current_hour >= 12:
-            await ctx.send('@everyone Rent is due at the end of the month!')
+    # get today's year
+    year = date.today().year
 
-        # If it is the 25th of the month and past 12pm, send a message to the channel
-        if today.day == 25 and current_hour >= 12:
-            await ctx.send('@everyone The internet bill is due today!!')
+    # get the current hour
+    hour = datetime.now().hour
+    channel = client.get_channel(1038361456846049292)
 
-        # If it is the last day of the month and past 12pm, send a message to the channel
-        if today.day == monthrange(current_year, current_month)[1] and current_hour >= 12:
-            await ctx.send('@everyone Rent is due today!!')
+    # If it is the 11th of the month and past 12pm, send a message to the channel
+    if day == 11 and hour == 12:
+        await channel.send('@everyone The power bill is due in one week!')
 
-        # Wait 12 hours to check again
-        await asyncio.sleep(43200)
+    # If it is the 18th of the month and past 12pm, send a message to the channel
+    if day == 18 and hour == 12:
+        await channel.send('@everyone The internet bill($14.83) is due in one week, and the power bill is due today!')
+
+    # If it is the 23rd of the month and past 12pm, send a message to the channel
+    if day == monthrange(year, month)[1] - 7 and hour == 12:
+        await channel.send('@everyone Rent is due at the end of the month!')
+
+    # If it is the 25th of the month and past 12pm, send a message to the channel
+    if day == 25 and hour >= 12:
+        await channel.send('@everyone The internet bill is due today!')
+
+    # If it is the last day of the month and past 12pm, send a message to the channel
+    if day == monthrange(year, month)[1] and hour == 12:
+        await channel.send('@everyone Rent is due today!')
 
 # Run the bot
-bot.run(token)
+client.run(token)
