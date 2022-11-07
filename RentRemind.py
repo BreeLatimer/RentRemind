@@ -53,7 +53,7 @@ async def check_remind():
         await channel.send('@everyone Rent is due at the end of the month!')
 
     # If it is the 25th of the month and past 12pm, send a message to the channel
-    if day == 25 and hour >= 12:
+    if day == 25 and hour == 12:
         await channel.send('@everyone The internet bill is due today!')
 
     # If it is the last day of the month and past 12pm, send a message to the channel
