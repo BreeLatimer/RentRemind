@@ -27,16 +27,21 @@ async def on_ready():
 @tasks.loop(hours=1)
 async def check_remind():
     # get today's date
-    day = date.today().day
+    # day = date.today().day
 
     # get today's month
-    month = date.today().month
+    # month = date.today().month
 
     # get today's year
-    year = date.today().year
+    # year = date.today().year
 
     # get the current hour
-    hour = datetime.now().hour
+    #hour = datetime.now().hour
+
+    day = 11
+    month = 11
+    year = 2022
+    hour = 12
     channel = client.get_channel(os.environ.get('CHANNEL_ID'))
 
     # If it is the 11th of the month and past 12pm, send a message to the channel
