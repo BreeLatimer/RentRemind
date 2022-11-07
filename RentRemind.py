@@ -42,7 +42,7 @@ async def check_remind():
     month = 11
     year = 2022
     hour = 12
-    channel = client.get_channel(os.environ.get('CHANNEL_ID'))
+    channel = client.get_channel((int)(os.environ.get('CHANNEL_ID')))
 
     # If it is the 11th of the month and past 12pm, send a message to the channel
     if day == 11 and hour == 12:
