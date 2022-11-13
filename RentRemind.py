@@ -24,6 +24,8 @@ async def on_ready():
     print('Bot is ready.')
 
 # Check every hour for reminders
+# NOTE: The time is set to 19 hours because the host's clock is 7 hours ahead of MST. 
+# This bot should go off during the noon hour.
 @tasks.loop(hours=1)
 async def check_remind():
     # get today's date
@@ -41,11 +43,11 @@ async def check_remind():
     channel = client.get_channel((int)(os.environ.get('CHANNEL_ID')))
 
     # If it is the 11th of the month and past 12pm, send a message to the channel
-    if day == 11 and hour == 12:
+    if day == 11 and hour == 19:
         await channel.send('@everyone The power bill is due in one week!')
 
     # If it is the 18th of the month and past 12pm, send a message to the channel
-    if day == 18 and hour == 12:
+    if day == 18 and hour == 19:
         await channel.send('@everyone The internet bill($14.83) is due in one week, and the power bill is due today!')
 
     # If it is the 23rd of the month and past 12pm, send a message to the channel
@@ -53,11 +55,11 @@ async def check_remind():
         await channel.send('@everyone Rent is due at the end of the month!')
 
     # If it is the 25th of the month and past 12pm, send a message to the channel
-    if day == 25 and hour >= 12:
+    if day == 25 and hour >= 19:
         await channel.send('@everyone The internet bill is due today!')
 
     # If it is the last day of the month and past 12pm, send a message to the channel
-    if day == monthrange(year, month)[1] and hour == 12:
+    if day == monthrange(year, month)[1] and hour == 19:
         await channel.send('@everyone Rent is due today!')
 
 # Run the bot
